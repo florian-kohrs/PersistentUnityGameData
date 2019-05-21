@@ -234,8 +234,7 @@ public abstract class BaseCorrespondingSerializableGameObject :
             return alreadyRestoredComponents;
         }
     }
-
-
+    
     public T getComponent<T>() where T : Component
     {
         T result = null;

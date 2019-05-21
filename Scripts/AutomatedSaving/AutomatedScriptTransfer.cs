@@ -5,9 +5,9 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using UnityEngine;
 
-public class AutomatedScriptTransfer
+public static class AutomatedScriptTransfer
 {
-    
+
     public static void transferScriptsSaving(object source, Dictionary<string, object> target, PersistentGameDataController.SaveType transferState)
     {
         Type sourceType = source.GetType();
@@ -18,8 +18,8 @@ public class AutomatedScriptTransfer
         {
             if (f.IsDefined(savedAttribute, true))
             {
-                SaveAttribute currentSaveAttribute = ((SaveAttribute)
-                    (f.GetCustomAttributes(savedAttribute, false)[0]));
+                SaveAttribute currentSaveAttribute = (SaveAttribute)
+                    (f.GetCustomAttributes(savedAttribute, false)[0]);
 
                 if ((transferState == PersistentGameDataController.SaveType.Game && currentSaveAttribute.saveForScene)
                     || (transferState == PersistentGameDataController.SaveType.Scene && currentSaveAttribute.saveForGame))
@@ -39,7 +39,7 @@ public class AutomatedScriptTransfer
         foreach (KeyValuePair<string,object> entry in source)
         {
             fields.Where(field => field.Name == entry.Key).First().
-                SetValue(target, getValue(entry.Value));
+                setValue(target, getValue(entry.Value));
         }
     }
     
@@ -69,7 +69,7 @@ public class AutomatedScriptTransfer
     /// </summary>
     /// <param name="source"></param>
     /// <returns></returns>
-    public static object getValue(object source)
+    private static object getValue(object source)
     {
         object result = source;
 
@@ -80,6 +80,25 @@ public class AutomatedScriptTransfer
         }
         
         return result;
+    }
+
+    /// <summary>
+    /// will set the value into the field unless value is IRestoreObject.
+    /// Then the value returned by value.restoreObject is set into the field
+    /// </summary>
+    /// <param name="field"></param>
+    /// <param name="target"></param>
+    /// <param name="value"></param>
+    private static void setValue(this FieldInfo field, object target, object value)
+    {
+        if (value is IRestoreObject)
+        {
+            field.SetValue(target, ((IRestoreObject)value).restoreObject());
+        }
+        else
+        {
+            field.SetValue(target, value);
+        }
     }
 
     /// <summary>

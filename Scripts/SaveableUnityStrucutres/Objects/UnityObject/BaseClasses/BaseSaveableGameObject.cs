@@ -38,7 +38,7 @@ public abstract class BaseSaveableGameObject : MonoBehaviour,
     private ISaveableGameObject parent;
 
     /// <summary>
-    /// the serialized object created to save the information of this object. also used to save references to this obect.
+    /// the serialized object created to save the information of this object. also used to save references to this object.
     /// </summary>
     public IRestorableGameObject CreatedSerializableGameObject { get; set; }
 

@@ -464,7 +464,7 @@ public class PersistentGameDataController
     }
 
     /// <summary>
-    /// function duplicated as static, to ease usage
+    /// load the game with the given name
     /// </summary>
     /// <param name="index"></param>
     public static void LoadGame(string name)
@@ -479,7 +479,7 @@ public class PersistentGameDataController
     }
 
     /// <summary>
-    /// function duplicated as static, to ease usage
+    /// load the game with the given index
     /// </summary>
     /// <param name="index"></param>
     public static void LoadGame(int index)

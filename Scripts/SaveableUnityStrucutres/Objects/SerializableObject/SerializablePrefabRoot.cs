@@ -4,23 +4,20 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-[System.Serializable]
+[Serializable]
 public class SerializablePrefabRoot : BaseCorrespondingSerializableGameObject
 {
     public SerializablePrefabRoot
-        (GameObject gameObject, string prefabName, string prefabPath = "") : base(gameObject)
+        (GameObject gameObject, IAssetRefHolder refHolder) : base(gameObject)
     {
-        this.prefabName = prefabName;
-        this.prefabPath = prefabPath;
+        prefabRef = refHolder.GetReferencer();
     }
 
-    private readonly string prefabName;
-
-    private readonly string prefabPath;
+    private IAssetReferencer prefabRef;
     
     protected override GameObject getSceneGameObject(Transform parent)
     {
-        return instantiateSaveableGameObject(getPrefabFromName(prefabName, prefabPath));
+        return instantiateSaveableGameObject(getPrefabFromName(prefabRef));
     }
 
     /// <summary>
@@ -40,14 +37,16 @@ public class SerializablePrefabRoot : BaseCorrespondingSerializableGameObject
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
-    private GameObject getPrefabFromName(string name, string prefabPath = "")
+    private GameObject getPrefabFromName(IAssetReferencer prefabRef)
     {
+        string prefabPath = prefabRef.RelativePathFromResource;
+        string name = prefabRef.AssetName;
         if (prefabPath != "" && prefabPath[prefabPath.Length - 1] != '/')
         {
             prefabPath += "/";
         }
 
-        GameObject result = Resources.Load<GameObject>("Prefabs/" + prefabPath + name);
+        GameObject result = Resources.Load<GameObject>(prefabPath + name);
 
         return result;
     }

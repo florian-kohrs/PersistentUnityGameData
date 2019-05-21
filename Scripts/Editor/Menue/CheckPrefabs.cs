@@ -7,13 +7,19 @@ public class CheckPrefabs : MonoBehaviour
     [MenuItem("SaveablePrefabs/Validate all Prefabs")]
     static void checkAllPrefabs()
     {
-        PrefabPathFixer.checkUncheckedPrefabsForSaveableEnvirenment();
+        AssetPathFixer.checkAllPrefabsForSaveableEnvironment();
     }
 
     [MenuItem("SaveablePrefabs/Validate unchecked Prefabs")]
     static void checkUncheckedPrefabs()
     {
-        PrefabPathFixer.checkUncheckedPrefabsForSaveableEnvirenment();
+        AssetPathFixer.checkUncheckedPrefabsForSaveableEnvironment();
+    }
+
+    [MenuItem("SaveablePrefabs/Validate all Assets")]
+    static void checkAllAssets()
+    {
+        AssetPathFixer.RevalidateAllSaveableObjects();
     }
 
 }
