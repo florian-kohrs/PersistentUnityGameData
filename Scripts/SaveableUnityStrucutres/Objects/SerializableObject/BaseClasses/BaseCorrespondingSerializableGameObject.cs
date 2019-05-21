@@ -263,4 +263,9 @@ public abstract class BaseCorrespondingSerializableGameObject :
         }
         return result;
     }
+
+    public void ResetAssigner()
+    {
+        AlreadyRestoredComponents.Clear();
+    }
 }

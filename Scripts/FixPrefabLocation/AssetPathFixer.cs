@@ -98,10 +98,10 @@ public class AssetPathFixer
         }
     }
 
-    private static void checkAsset<T>(string currentPath, T assetRef, System.Func<T,string> getName, System.Action<T, string> onCheckDone) where T : IAssetRefHolder
-    {
-        
+    private static void checkAsset<T>(string currentPath, T assetRef, System.Func<T,string> getName, System.Action<T, string> onCheckDone = null) where T : Object, IAssetRefMaintainer
+    { 
         string newRelativeAssetPath;
+        assetRef.GetInitializer().InitializeAsset(assetRef);
         IAssetReferencer r = assetRef.GetReferencer();
         r.AssetExtension = Path.GetExtension(currentPath).Remove(0,1);
         ///check if the prefab is already in the correct directory
@@ -114,7 +114,7 @@ public class AssetPathFixer
         {
             newRelativeAssetPath = currentPath;
         }
-        //string newRelativePrefabDirectory = Path.GetDirectoryName(newRelativeAssetPath);
+
         string newRelativePrefabDirectory = newRelativeAssetPath.Substring(0, newRelativeAssetPath.LastIndexOf('/'));
         string assetMoveErrorMessage = null;
 
@@ -131,7 +131,7 @@ public class AssetPathFixer
             string pathFromAssetFolder = newRelativePrefabDirectory.Remove(0, RelativeResourceFolderPath.Length + 1);
             r.WasAlreadyValidated = true;
             r.RelativePathFromResource = pathFromAssetFolder;
-            onCheckDone(assetRef, newRelativeAssetPath);
+            onCheckDone?.Invoke(assetRef, newRelativeAssetPath);
         }
         else
         {
@@ -173,13 +173,14 @@ public class AssetPathFixer
                             }
                         case ("asset"):
                             {
-
+                                checkAsset(s, AssetDatabase.LoadAssetAtPath<SaveableScriptableObject>(s), obj => obj.name, (o,_) => EditorUtility.SetDirty(o));
                                 break;
                             }
                     }
                 }
             }
         }
+        AssetDatabase.SaveAssets();
     }
 
 

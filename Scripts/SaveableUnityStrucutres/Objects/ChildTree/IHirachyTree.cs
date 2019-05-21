@@ -6,9 +6,9 @@ using System.Text;
 public interface IHirachyTree<T>
 {
 
-    List<T> getValues();
+    IList<T> getValues();
 
-    List<ITreeNode<T>> getAllNodesWithValues();
+    IList<ITreeNode<T>> getAllNodesWithValues();
 
     IEnumerable<ITreeNode<T>> getReversedNodesWithValue();
     

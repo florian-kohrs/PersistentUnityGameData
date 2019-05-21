@@ -129,15 +129,16 @@ public class SaveableScene
                 (gameObject.Value.saveObjectAndPrepareScripts(), gameObject.getFullTreePath());
         }
 
-        ///event tho the object is not saved in this scene the restoreable objects are
+        ///even though the object is not saved in this scene the restoreable objects are
         ///still created and returned as result so they can be used in other scenes
         foreach(ISaveableGameObject gameObject in ignoreForSave)
         {
             result.Add(gameObject.saveObjectAndPrepareScripts());
         }
-    
+
+        IList<ISaveableGameObject> savedObjects = saveableObjectTree.getValues();
         ///after all object with their scripts were initiated the scripts values are saved
-        foreach (ISaveableGameObject gameObject in saveableObjectTree.getValues())
+        foreach (ISaveableGameObject gameObject in savedObjects)
         {
             gameObject.saveAllBehaviours(saveState);
         }
@@ -148,6 +149,17 @@ public class SaveableScene
         foreach (ISaveableGameObject gameObject in ignoreForSave)
         {
             gameObject.saveAllBehaviours(saveState);
+        }
+
+        ///reset all component assigners for each saved object
+        foreach (ISaveableGameObject gameObject in savedObjects)
+        {
+            gameObject.ResetAssigner();
+        }
+
+        foreach (ISaveableGameObject gameObject in ignoreForSave)
+        {
+            gameObject.ResetAssigner();
         }
 
         ///deleting all children for next save

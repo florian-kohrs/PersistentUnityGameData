@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -11,9 +12,9 @@ public static class AutomatedScriptTransfer
     public static void transferScriptsSaving(object source, Dictionary<string, object> target, PersistentGameDataController.SaveType transferState)
     {
         Type sourceType = source.GetType();
-        
+
         Type savedAttribute = typeof(SaveAttribute);
-        
+
         foreach (FieldInfo f in getFieldsFromType(sourceType, typeof(SaveableMonoBehaviour)))
         {
             if (f.IsDefined(savedAttribute, true))
@@ -36,13 +37,13 @@ public static class AutomatedScriptTransfer
     {
         FieldInfo[] fields = getFieldsFromType(target.GetType(), lastSerializedType);
 
-        foreach (KeyValuePair<string,object> entry in source)
+        foreach (KeyValuePair<string, object> entry in source)
         {
             fields.Where(field => field.Name == entry.Key).First().
                 setValue(target, getValue(entry.Value));
         }
     }
-    
+
     private static FieldInfo[] getFieldsFromType(Type target, Type last, bool lastInclusive = true)
     {
         List<FieldInfo> fields = new List<FieldInfo>();
@@ -62,7 +63,7 @@ public static class AutomatedScriptTransfer
 
         return fields.ToArray();
     }
-    
+
     /// <summary>
     /// returns the value of an object, unless its an ITransformObject. Then 
     /// the getTransformedValue will get called and returned.
@@ -78,7 +79,33 @@ public static class AutomatedScriptTransfer
             ITransformObject transformObject = (ITransformObject)result;
             result = transformObject.getTransformedValue();
         }
-        
+        //else
+        //{
+        //    Type t = source.GetType();
+        //    if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IList<>))
+        //    {
+        //        IList a = source as IList; 
+        //        Type itemType = t.GetGenericArguments()[0];
+        //        if (itemType == typeof(IRestoreObject))
+        //        {
+        //            return source as 
+        //        }
+        //    }
+        //    //    else if (value is IEnumerable<KeyValuePair<object, object>>)
+        //    //    {
+        //    //        //foreach (object o in (value as IEnumerable<K>)
+        //    //    }
+        //    //    else
+        //    //    {
+        //    //        field.SetValue(target, value);
+        //    //    }
+        //    //}
+        //    //else
+        //    //{
+        //    //    field.SetValue(target, value);
+        //    //}
+        //}
+
         return result;
     }
 
@@ -91,13 +118,40 @@ public static class AutomatedScriptTransfer
     /// <param name="value"></param>
     private static void setValue(this FieldInfo field, object target, object value)
     {
-        if (value is IRestoreObject)
+        if (value != null)
         {
-            field.SetValue(target, ((IRestoreObject)value).restoreObject());
-        }
-        else
-        {
-            field.SetValue(target, value);
+            if (value is IRestoreObject)
+            {
+                field.SetValue(target, ((IRestoreObject)value).restoreObject());
+            }
+            else
+            {
+                field.SetValue(target, value);
+            }
+            //else
+            //{
+            //    Type t = value.GetType();
+            //    if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IList<>))
+            //    {
+            //        Type itemType = t.GetGenericArguments()[0];
+            //        if (itemType == typeof(IRestoreObject))
+            //        {
+            //            field.SetValue(target, (value as IList<IRestoreObject>).Select(v => v.restoreObject()).ToList());
+            //        }
+            //        else if (value is IEnumerable<KeyValuePair<object, object>>)
+            //        {
+            //            //foreach (object o in (value as IEnumerable<K>)
+            //        }
+            //        else
+            //        {
+            //            field.SetValue(target, value);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        field.SetValue(target, value);
+            //    }
+            //}
         }
     }
 
@@ -110,7 +164,7 @@ public static class AutomatedScriptTransfer
     {
         FieldInfo[] targetFields = getFieldsFromSaveableComponent(source.GetType());
 
-        foreach(FieldInfo f in targetFields)
+        foreach (FieldInfo f in targetFields)
         {
             target.Add(f.Name, getValue(f.GetValue(source)));
         }

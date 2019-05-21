@@ -5,30 +5,16 @@ using System.Linq;
 using UnityEngine;
 
 [Transferable]
-public class SaveablePrefabRoot : BaseSaveableGameObject, IAssetRefHolder
+public class SaveablePrefabRoot : BaseSaveableGameObject, IAssetRefMaintainer/*, IAssetInitializer*/
 {
     
-    public AssetReference assetRef;
-
-    //[SerializeField, Tooltip("The name of the corresponding prefab.")]
-    //private string prefabName;
-
-    //[SerializeField, Tooltip("The default path is \"Resources/Prefabs\". If the prefab is in another " +
-    //    "Folder within the \"Prefabs\" folder, set the relative path here.")]
-    //private string relativeResourceFolderPath;
-    
+    [HideInInspector]
+    public PrefabRef assetRef;
 
     public IAssetReferencer GetReferencer()
     {
         return assetRef;
     }
-
-
-    //public string RelativeResourceFolderPath
-    //{
-    //    get { return relativeResourceFolderPath; }
-    //    set { relativeResourceFolderPath = value; }
-    //}
 
     protected override void Awake()
     {
@@ -40,7 +26,6 @@ public class SaveablePrefabRoot : BaseSaveableGameObject, IAssetRefHolder
             SaveableGame.addObjectToGarbageHeap(gameObject);
         }
         Debug.Log("Awake done");
-
     }
 
     public new void prepareSceneTransition()
@@ -53,4 +38,13 @@ public class SaveablePrefabRoot : BaseSaveableGameObject, IAssetRefHolder
         return new SerializablePrefabRoot(gameObject, this);
     }
 
+    public IAssetInitializer GetInitializer()
+    {
+        return assetRef;
+    }
+
+    //public void InitializeAsset(UnityEngine.Object assetRef)
+    //{
+    //    assetRef.GeIn
+    //}
 }

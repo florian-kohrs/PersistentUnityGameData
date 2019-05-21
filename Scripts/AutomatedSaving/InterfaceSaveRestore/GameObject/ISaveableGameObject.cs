@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface ISaveableGameObject
+public interface ISaveableGameObject : IComponentAssigner
 {
 
     bool IsTransferable { get; }

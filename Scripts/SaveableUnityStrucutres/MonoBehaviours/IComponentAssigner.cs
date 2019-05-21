@@ -13,4 +13,6 @@ public interface IComponentAssigner
 
     T getComponent<T>() where T : Component;
 
+    void ResetAssigner();
+
 }

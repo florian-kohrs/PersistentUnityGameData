@@ -127,7 +127,7 @@ public class TreeNode<T> : ITreeNode<T>
         return result;
     }
 
-    public void getAllNodesWithValues(List<ITreeNode<T>> result)
+    public void getAllNodesWithValues(IList<ITreeNode<T>> result)
     {
 
         if(value != null)
@@ -141,7 +141,7 @@ public class TreeNode<T> : ITreeNode<T>
         }
     }
 
-    public void getValues(List<T> values)
+    public void getValues(IList<T> values)
     {
 
         if(Value != null)

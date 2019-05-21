@@ -56,7 +56,6 @@ public abstract class BaseSaveableGameObject : MonoBehaviour,
             restorableComponent = component.createRestoreableComponent();
             CreatedSerializableGameObject.addComponent(restorableComponent);
         }
-
     }
 
     /// <summary>
@@ -296,4 +295,8 @@ public abstract class BaseSaveableGameObject : MonoBehaviour,
         return result;
     }
 
+    public void ResetAssigner()
+    {
+        alreadySavedComponents.Clear();
+    }
 }

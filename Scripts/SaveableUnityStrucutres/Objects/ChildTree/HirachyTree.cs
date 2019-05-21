@@ -11,23 +11,23 @@ public class HirachyTree<T> : IHirachyTree<T> {
 
     public HirachyTree()
     {
-        this.root = new TreeNode<T>(null,0);
+        root = new TreeNode<T>(null,0);
     }
     
     private ITreeNode<T> root;
     
-    public List<T> getValues()
+    public IList<T> getValues()
     {
-        List<T> result = new List<T>();
+        IList<T> result = new List<T>();
 
         root.getValues(result);
 
         return result;
     }
 
-    public List<ITreeNode<T>> getAllNodesWithValues()
+    public IList<ITreeNode<T>> getAllNodesWithValues()
     {
-        List<ITreeNode<T>> result = new List<ITreeNode<T>>();
+        IList<ITreeNode<T>> result = new List<ITreeNode<T>>();
         root.getAllNodesWithValues(result);
         return result;
     }

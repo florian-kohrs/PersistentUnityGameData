@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 public interface ITreeNode<T>
 {
-    void getAllNodesWithValues(List<ITreeNode<T>> tree);
+    void getAllNodesWithValues(IList<ITreeNode<T>> tree);
 
     void getReversedNodesWithValue(Stack<ITreeNode<T>> tree);
 
-    void getValues(List<T> values);
+    void getValues(IList<T> values);
 
     Stack<int> getFullTreePath();
 

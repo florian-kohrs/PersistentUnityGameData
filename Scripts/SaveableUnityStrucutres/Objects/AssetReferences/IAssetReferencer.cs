@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IAssetReferencer 
+public interface IAssetReferencer
 {
 
     string RelativePathFromResource { get; set; }
@@ -12,5 +12,5 @@ public interface IAssetReferencer
     string AssetExtension { get; set; }
     
     bool WasAlreadyValidated { get; set; }
-
+    
 }
