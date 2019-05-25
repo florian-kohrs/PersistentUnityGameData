@@ -463,6 +463,11 @@ public class PersistentGameDataController
         }
     }
 
+    public static SaveableGame[] GetAllSaveSlots()
+    {
+        return instance.allSavedGames.ToArray();
+    }
+
     /// <summary>
     /// load the game with the given name
     /// </summary>

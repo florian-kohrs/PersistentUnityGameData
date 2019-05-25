@@ -74,6 +74,7 @@ public abstract class BaseSaveableGameObject : MonoBehaviour,
         {
             children.saveAllBehaviours(saveState);
         }
+        ResetAssigner();
     }
 
     protected virtual void Awake()

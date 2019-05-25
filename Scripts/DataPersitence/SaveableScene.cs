@@ -150,18 +150,7 @@ public class SaveableScene
         {
             gameObject.saveAllBehaviours(saveState);
         }
-
-        ///reset all component assigners for each saved object
-        foreach (ISaveableGameObject gameObject in savedObjects)
-        {
-            gameObject.ResetAssigner();
-        }
-
-        foreach (ISaveableGameObject gameObject in ignoreForSave)
-        {
-            gameObject.ResetAssigner();
-        }
-
+        
         ///deleting all children for next save
         saveableObjectTree.clear();
         
