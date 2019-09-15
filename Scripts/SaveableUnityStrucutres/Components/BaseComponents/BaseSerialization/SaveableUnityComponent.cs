@@ -15,9 +15,12 @@ public abstract class SaveableUnityComponent<T> : SaveableComponent, ITransformO
     protected abstract void saveComponent(T component, PersistentGameDataController.SaveType saveType);
     protected abstract void restoreComponent(T component);
 
-    public bool hasComponentAttached(GameObject gameObject) 
+    public bool HasComponentAttached
     {
-        return gameObject.GetComponent<T>() != null;
+        get
+        {
+            return gameObject.GetComponent<T>() != null;
+        }
     }
 
     /// <summary>

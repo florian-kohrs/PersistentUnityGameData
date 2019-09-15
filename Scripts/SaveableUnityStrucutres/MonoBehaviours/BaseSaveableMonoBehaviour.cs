@@ -25,7 +25,7 @@ public abstract class BaseSaveableMonoBehaviour : BaseSaveableObject, ITransform
     /// awake is not called, as the loading initialsation isnt finished at this time
     /// use "behaaviourLoaded" instead!
     /// </summary>
-    public virtual void onAwake() { }
+    public virtual void OnAwake() { }
 
     public IRestorableComponent CreatedSaveableMonoBehaviour { get; private set; }
 

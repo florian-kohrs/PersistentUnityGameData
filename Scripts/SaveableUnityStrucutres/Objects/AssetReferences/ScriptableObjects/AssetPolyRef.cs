@@ -7,11 +7,11 @@ using UnityEngine;
 [System.Serializable]
 public class AssetPolyRef<T> : AssetReference, IAssetRefMaintainer where T : Object, IAssetRefMaintainer
 {
-
-    public AssetPolyRef() { }
+    
+    public AssetPolyRef() : base() { }
 
     protected AssetPolyRef(SerializationInfo info, StreamingContext context) : base(info, context) { }
-
+    
     [SerializeField]
     private T runtimeRef;
 

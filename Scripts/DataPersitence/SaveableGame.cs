@@ -5,14 +5,13 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-[System.Serializable]
+[Serializable]
 public class SaveableGame
 {
 
     public SaveableGame(PersistentGameDataController gameDataController)
     {
-        Debug.Log("Saveable Game Konstruktor");
-        SaveableGame.GameDataController = gameDataController;
+        GameDataController = gameDataController;
     }
 
     #region static properties for global accessibility
@@ -148,10 +147,15 @@ public class SaveableGame
     /// <param name="data"></param>
     public static void addGameData<T>(T data)
     {
-        getCurrentGame().addStaticGameData<T>(data);
+        getCurrentGame().addStaticGameData(data);
     }
-    
-    public string GameName { get; set; }
+
+    private string gameName;
+
+    public string GameName {
+        get { return gameName; }
+        set { gameName = value; }
+    }
 
     public string CurrentSceneName { get; private set; }
 
@@ -172,7 +176,7 @@ public class SaveableGame
                 (FolderSystem.getSceneSavePath(GameName,
                 CurrentSceneName));
 
-        ///reset scene list so no changes made before loading are disturbing
+        ///reset scene list so no changes made before loading are interfering
         AllScenes = new List<SaveableScene>();
 
         addScene(loadedScene);
@@ -212,9 +216,10 @@ public class SaveableGame
         return prepareNextScene(sceneName, new List<IRestorableGameObject>());
     }
 
-    public SaveableScene prepareNextScene(string sceneName, List<IRestorableGameObject> transferToNextScene)
+    public SaveableScene prepareNextScene(string sceneName, List<IRestorableGameObject> transferToNextScene, bool loadScene = true)
     {
         SaveableScene result = getScene(sceneName);
+        FirstTimeSceneLoaded = !loadScene;
         ///check if the scene is loaded already
         if (result == null)
         {
@@ -223,8 +228,8 @@ public class SaveableGame
             {
                 ///if the scene exists in a file load it
                 result = GameDataController.loadSaveable<SaveableScene>(FolderSystem.getSceneSavePath(GameName, sceneName));
-                ///create new Scene list. Since its marked as "NonSerialized" its null after loading
-                allScenes = new List<SaveableScene>();
+                /////create new Scene list. Since its marked as "NonSerialized" its null after loading
+                //AllScenes = new List<SaveableScene>();
                 addScene(result);
             }
             else
@@ -237,20 +242,17 @@ public class SaveableGame
                 FirstTimeSceneLoaded = true;
             }
         }
-        else
-        {
-            FirstTimeSceneLoaded = false;
-        }
         CurrentScene = result;
         CurrentScene.initiateLoadedScene();
+        
         CurrentScene.TransferedObjectTree = transferToNextScene;
         return result;
     }
 
-    public void restoreCurrentSceneObjects(PersistentGameDataController.GameLoadInitiated gameLoadEvent)
+    public void restoreCurrentSceneObjects(PersistentGameDataController.GameLoadInitiated gameLoadEvent, bool restoreData)
     {
         IsInstantiating = true;
-        CurrentScene.restoreScene(gameLoadEvent);
+        CurrentScene.restoreScene(gameLoadEvent, restoreData);
         IsInstantiating = false;
     }
 
@@ -378,14 +380,13 @@ public class SaveableGame
     /// <returns></returns>
     private static SaveableGame getCurrentGame()
     {
-        Debug.Log("Current Game Requested: Game is null: " + (GameDataController == null));
         if(GameDataController == null)
         {
             Debug.LogWarning("Current Game was requested before the game was loaded. " +
                 "This should be avoided by loading an existing game or starting a new one out of a menue" +
                 " with no saveable objects in its scene.");
 
-            PersistentGameDataController.NewGame(SceneManager.GetActiveScene().name);
+            PersistentGameDataController.EnterRunningGame();
         }
 
         return GameDataController.getCurrentGame();

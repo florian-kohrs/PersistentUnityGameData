@@ -18,14 +18,12 @@ public class SaveablePrefabRoot : BaseSaveableGameObject, IAssetRefMaintainer/*,
 
     protected override void Awake()
     {
-        Debug.Log("Prefab Root awakend");
         base.Awake();
         if (!SaveableGame.KeepObjects)
-        {
+        { 
             ///if the object is not gonna be kept, it is added to the garbage heap so it can be deleted later
             SaveableGame.addObjectToGarbageHeap(gameObject);
         }
-        Debug.Log("Awake done");
     }
 
     public new void prepareSceneTransition()

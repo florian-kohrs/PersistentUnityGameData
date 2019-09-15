@@ -58,7 +58,7 @@ public static class AutomatedScriptTransfer
         {
             parentType = parentType.BaseType;
             fields.AddRange(parentType.GetFields((
-                BindingFlags.NonPublic | BindingFlags.Instance)));
+                BindingFlags.NonPublic | BindingFlags.Instance)).Where(f => !f.IsFamily));
         }
 
         return fields.ToArray();
@@ -190,7 +190,7 @@ public static class AutomatedScriptTransfer
         {
             parentType = parentType.BaseType;
             fields.AddRange(parentType.GetFields((
-                BindingFlags.NonPublic | BindingFlags.Instance)));
+                BindingFlags.NonPublic | BindingFlags.Instance)).Where(f => !f.IsFamily));
         }
 
         return fields.ToArray();

@@ -9,15 +9,15 @@ public abstract class AssetReference : IAssetReferencer, IAssetInitializer, IAss
 {
 
     public AssetReference() { }
-
+    
     protected AssetReference(SerializationInfo info, StreamingContext context)
     {
-        assetName = (string) info.GetValue(nameof(assetName), typeof(string));
-        relativePathFromResource = (string) info.GetValue(nameof(relativePathFromResource), typeof(string));
-        assetExtension = (string) info.GetValue(nameof(assetExtension), typeof(string));
+        assetName = (string)info.GetValue(nameof(assetName), typeof(string));
+        relativePathFromResource = (string)info.GetValue(nameof(relativePathFromResource), typeof(string));
+        assetExtension = (string)info.GetValue(nameof(assetExtension), typeof(string));
         RestoreObject();
     }
-    
+
     public void GetObjectData(SerializationInfo info, StreamingContext context)
     {
         IAssetReferencer referencer = GetSaveableReferencer();
@@ -29,22 +29,58 @@ public abstract class AssetReference : IAssetReferencer, IAssetInitializer, IAss
         info.AddValue(nameof(assetExtension), assetExtension);
     }
 
+    public override bool Equals(object obj)
+    {
+        if (obj != null && obj is AssetReference)
+        {
+            return ((AssetReference)obj).AssetIdentifier.Equals(AssetIdentifier);
+        }
+        else
+        {
+            return base.Equals(obj);
+        }
+    }
+
+    public override int GetHashCode()
+    {
+        return AssetIdentifier.GetHashCode();
+    }
+
+    public string AssetIdentifier
+    {
+        get
+        {
+            IAssetReferencer r = GetSaveableReferencer();
+            if(r == null)
+            {
+                return RelativePathFromResource + AssetName + AssetExtension;
+            }
+            else
+            {
+                return r?.RelativePathFromResource + r?.AssetName + r?.AssetExtension;
+            }
+        }
+    }
+
     public abstract void InitializeAsset(Object assetRef);
-    
+
     public abstract IAssetReferencer GetReferencer();
 
     protected abstract IAssetReferencer GetSaveableReferencer();
-   
+
     public System.Type assetType;
 
+    [HideInInspector]
     [SerializeField]
     private string relativePathFromResource;
 
     public string RelativePathFromResource
     {
-        get { return relativePathFromResource; } set { relativePathFromResource = value; }
+        get { return relativePathFromResource; }
+        set { relativePathFromResource = value; }
     }
 
+    [HideInInspector]
     [SerializeField]
     private string assetName;
 
@@ -54,6 +90,7 @@ public abstract class AssetReference : IAssetReferencer, IAssetInitializer, IAss
         set { assetName = value; }
     }
 
+    [HideInInspector]
     [SerializeField]
     private string assetExtension;
 
@@ -63,6 +100,7 @@ public abstract class AssetReference : IAssetReferencer, IAssetInitializer, IAss
         set { assetExtension = value; }
     }
 
+    [HideInInspector]
     [SerializeField]
     private bool wasAlreadyValidated;
 
@@ -80,23 +118,24 @@ public abstract class AssetReference : IAssetReferencer, IAssetInitializer, IAss
     public Object RestoreObject()
     {
         Object result;
-        if(!refRestoreTable.TryGetValue(this, out result))
+        //if (!refRestoreTable.TryGetValue(this, out result))
         {
             result = Resources.Load(RelativePathFromResource + "/" + AssetName, OjectType);
             if (result != null)
             {
-                refRestoreTable.Add(this, result);
+                //refRestoreTable.Add(this, result);
             }
         }
         InitializeAsset(result);
         return result;
     }
-    
+
     /// <summary>
     /// this dictionary will prevent the same asset references from 
     /// being searched in the resource folder multiple times
+    /// -> currently ends in an endless loop
     /// </summary>
-    private static Dictionary<AssetReference, Object> refRestoreTable = 
-        new Dictionary<AssetReference, Object>();
-    
+    private static Dictionary<string, Object> refRestoreTable =
+        new Dictionary<string, Object>();
+
 }

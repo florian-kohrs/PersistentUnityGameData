@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// creates a saveable copy on request
@@ -141,28 +142,33 @@ public abstract class BaseSaveableGameObject : MonoBehaviour,
         Stack<int> result = new Stack<int>();
 
         result.Push(transform.GetSiblingIndex());
-
         Transform current = transform.parent;
-       
+        parent = null;
+
         if (current != null)
         {
             do
             {
+                ///this will not work for scene root objects in standalone build!!!  
+                ///scenes must be setup with only one root element only!!
+                int currentSiblingIndex = current.GetSiblingIndex();
+                
                 ///add current non saved object sibling index to parent stack trace
-                result.Push(current.GetSiblingIndex());
+                result.Push(currentSiblingIndex);
                 this.parent = current.GetComponent<BaseSaveableGameObject>();
                 current = current.parent;
             } while (current != null && parent == null);
         }
 
-        if (this.parent != null)
+        if (parent != null)
         {
             ///if the parent is not null, the sibling index of the parent is removed from the stack
             ///as its not needed to find its own child
+            //Debug.Log("Transform has parent so the last index is deleted");
             result.Pop();
             parent.addChildren(this, result);
         }
-
+        
         return result;
     }
     
@@ -299,5 +305,11 @@ public abstract class BaseSaveableGameObject : MonoBehaviour,
     public void ResetAssigner()
     {
         alreadySavedComponents.Clear();
+    }
+
+    public void ResetChildNodes()
+    {
+        childrenWithPath =
+        new HirachyTree<ISaveableGameObject>();
     }
 }

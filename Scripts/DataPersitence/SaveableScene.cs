@@ -35,7 +35,8 @@ public class SaveableScene
         set { transferedObjects = value; }
     }
 
-    public HirachyTree<IRestorableGameObject> RestoreableObjectTree {
+    public HirachyTree<IRestorableGameObject> RestoreableObjectTree
+    {
         get { return restoreableObjectTree; }
     }
 
@@ -48,13 +49,15 @@ public class SaveableScene
     /// </summary>
     [System.NonSerialized]
     private Stack<GameObject> garbageHeap = new Stack<GameObject>();
-    
-    public Stack<GameObject> GarbageHeap {
+
+    public Stack<GameObject> GarbageHeap
+    {
         get { return garbageHeap; }
         private set { garbageHeap = value; }
     }
 
-    public List<ISaveableGameObject> AllInGameObjects {
+    public List<ISaveableGameObject> AllInGameObjects
+    {
 
         get
         {
@@ -93,17 +96,23 @@ public class SaveableScene
     /// usefull to take gameobject to the next scene</param>
     /// <returns>this functions returns the unsaved objects, since its very
     /// likely that they shall be transfered to another scene</returns>
-    public List<IRestorableGameObject> saveScene(PersistentGameDataController.SaveType saveState, 
+    public List<IRestorableGameObject> saveScene(PersistentGameDataController.SaveType saveState,
         List<ISaveableGameObject> ignoreForSave)
     {
         List<IRestorableGameObject> result = new List<IRestorableGameObject>();
-        
+
         ///clear current list, and fill it with current objects
         RestoreableObjectTree.clear();
 
         HirachyTree<ISaveableGameObject> saveableObjectTree = new HirachyTree<ISaveableGameObject>();
 
         Stack<int> currentHirachy;
+
+        ///reset the hirachy tree before saving again
+        foreach (ISaveableGameObject gameObject in AllInGameObjects)
+        {
+            gameObject.ResetChildNodes();
+        }
 
         ///set parent and children of all objects
         ///also adds all objects with no saveable parent to root list
@@ -131,7 +140,7 @@ public class SaveableScene
 
         ///even though the object is not saved in this scene the restoreable objects are
         ///still created and returned as result so they can be used in other scenes
-        foreach(ISaveableGameObject gameObject in ignoreForSave)
+        foreach (ISaveableGameObject gameObject in ignoreForSave)
         {
             result.Add(gameObject.saveObjectAndPrepareScripts());
         }
@@ -150,17 +159,17 @@ public class SaveableScene
         {
             gameObject.saveAllBehaviours(saveState);
         }
-        
+
         ///deleting all children for next save
         saveableObjectTree.clear();
-        
+
         ///since the scene is saved, it needs to be stored to file on the 
         ///next game save
         DirtyData = true;
 
         return result;
     }
-    
+
     /// <summary>
     /// clears list of all inGameObjects
     /// </summary>
@@ -168,15 +177,18 @@ public class SaveableScene
     {
         AllInGameObjects.Clear();
     }
-    
+
     /// <summary>
     /// restores the whole saved scene
     /// </summary>
     /// <param name="onSetDataInitiated"></param>
-    public void restoreScene(PersistentGameDataController.GameLoadInitiated onSetDataInitiated)
-    { 
-        recreateObjectsAndScripts();
-        
+    public void restoreScene(PersistentGameDataController.GameLoadInitiated onSetDataInitiated, bool restoreData)
+    {
+        if (restoreData)
+        {
+            recreateObjectsAndScripts();
+        }
+
         createTransferedObjects(transferedObjects);
 
         ///call all event-subscriber
@@ -185,7 +197,12 @@ public class SaveableScene
             onSetDataInitiated();
         }
 
-        restoreComponentValues();
+        if (restoreData)
+        {
+            RestoreSavedComponentValues();
+        }
+
+        RestoreTransferedValues();
     }
 
     /// <summary>
@@ -230,7 +247,7 @@ public class SaveableScene
         ///set all parent to null so they wont be a child of a saved prefab, since all prefabs will
         ///be destroyed and so would the nonPrefabs as the childs of destroyed objects are 
         ///destroyed aswell
-        foreach(Transform t in allSavedNonPrefabs)
+        foreach (Transform t in allSavedNonPrefabs)
         {
             t.SetParent(null);
             ///the order of the objects is one of the most important things in the process of restoring the 
@@ -250,7 +267,7 @@ public class SaveableScene
             treeNode.Value.createObject(
             getTransformFromPath(
                 treeNode.getParentTreePath()
-            ) 
+            )
             , treeNode.Key);
         }
 
@@ -258,12 +275,27 @@ public class SaveableScene
 
     private void createTransferedObjects(List<IRestorableGameObject> transferedObjects)
     {
+        ///to avoid a bug from Unity, where in Standalone the order of scene root objects
+        ///is not deterministic and the sibling index of root objects is always null,
+        ///there will be a single main root object, all objects must be childs of
+        Transform parent = SceneRootTransform;
         if (this.transferedObjects != null)
         {
             foreach (IRestorableGameObject restorable in transferedObjects)
             {
                 ///create the object without a parent as root element
-                restorable.createObject(null);
+                restorable.createObject(parent);
+            }
+        }
+    }
+
+    public void RestoreTransferedValues()
+    {
+        if (transferedObjects != null)
+        {
+            foreach (IRestorableGameObject restorableGameObject in transferedObjects)
+            {
+                restorableGameObject.restoreComponentValues();
             }
             transferedObjects.Clear();
         }
@@ -272,20 +304,13 @@ public class SaveableScene
     /// <summary>
     /// sets the saved values to the created scripts
     /// </summary>
-    public void restoreComponentValues()
+    public void RestoreSavedComponentValues()
     {
         foreach (IRestorableGameObject restorableGameObject in RestoreableObjectTree.getValues())
         {
             restorableGameObject.restoreComponentValues();
         }
 
-        if (transferedObjects != null)
-        {
-            foreach (IRestorableGameObject restorableGameObject in transferedObjects)
-            {
-                restorableGameObject.restoreComponentValues();
-            }
-        }
     }
 
     public static Transform getTransformFromPath(Transform start, Stack<int> path)
@@ -307,13 +332,13 @@ public class SaveableScene
         Transform result = start;
 
         lastInt = 0;
-
+        int count = 0;
         foreach (int i in path)
         {
             lastInt = i;
             result = result.GetChild(lastInt);
+            count++;
         }
-
         return result;
     }
 
@@ -326,7 +351,7 @@ public class SaveableScene
     public static Transform getTransformFromPath(Stack<int> path, out int lastInt)
     {
         Transform start = null;
-        
+
         if (path.Count > 0)
         {
             int index = path.Pop();
@@ -349,4 +374,19 @@ public class SaveableScene
     {
         GarbageHeap = new Stack<GameObject>();
     }
+
+    public static Transform SceneRootTransform
+    {
+        get
+        {
+            return SceneManager.GetActiveScene().GetRootGameObjects()[0].transform;
+        }
+    }
+
+    public static void SetAsRootTransform(Transform t)
+    {
+        t.parent = SceneRootTransform;
+        t.SetAsLastSibling();
+    }
+
 }

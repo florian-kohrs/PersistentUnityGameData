@@ -19,8 +19,8 @@ public class SBoxCollider : SerializeableCollider<BoxCollider>
     protected override void restoreComponent(BoxCollider component)
     {
         base.restoreComponent(component);
-        component.center = center.convertIntoVector3D();
-        component.size = size.convertIntoVector3D();
+        component.center = center.v;
+        component.size = size.v;
     }
 
 }

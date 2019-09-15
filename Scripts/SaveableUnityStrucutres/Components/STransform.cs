@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class STransform : SaveableUnityComponent<Transform>
 {
@@ -10,15 +10,16 @@ public class STransform : SaveableUnityComponent<Transform>
     protected override void saveComponent(Transform component, PersistentGameDataController.SaveType saveType)
     {
         this.position = new Serializable3DVector(component.position);
-        this.rotation = new Serializable3DVector(component.eulerAngles);
-        this.scale = new Serializable3DVector(component.localScale);
+        position = new Serializable3DVector(component.position);
+        rotation = new Serializable3DVector(component.eulerAngles);
+        scale = new Serializable3DVector(component.localScale);
     }
 
     protected override void restoreComponent(Transform transform)
     {
-        transform.position = position.convertIntoVector3D();
-        transform.localScale = scale.convertIntoVector3D();
-        transform.eulerAngles = rotation.convertIntoVector3D();
+        transform.position = position.v;
+        transform.localScale = scale.v;
+        transform.eulerAngles = rotation.v;
     }
 
 }

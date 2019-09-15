@@ -14,7 +14,7 @@ public class FolderSystem {
     ///containing multiple files of different scenes
     ///this is done to minimize the loading time by loading few small files
     ///instead if one big, as its complexity is O^2
-    public static readonly string saveOrderName = "Stored";
+    public static readonly string saveDirName = "Stored";
 
     public static readonly string sceneFolderName = "Scenes";
     
@@ -45,6 +45,7 @@ public class FolderSystem {
     /// <param name="pathParts"></param>
     public static void createAssetPath(params string[] pathParts)
     {
+#if UNITY_EDITOR
         if (pathParts != null && pathParts.Length > 0)
         {
             string relativeBuildPath = pathParts[0];
@@ -61,6 +62,7 @@ public class FolderSystem {
                 }
                );
         }
+#endif
     }
 
     /// <summary>
@@ -88,7 +90,13 @@ public class FolderSystem {
 
     public static void createDefaultFolderSystem()
     {
-        createPath(Application.persistentDataPath, saveOrderName);
+        createPath(Application.persistentDataPath, saveDirName);
+    }
+
+    public static void DeleteGame(SaveableGame game)
+    {
+        string path = getGameDirectory(game.GameName);
+        Directory.Delete(path, true);
     }
 
     /// <summary>
@@ -99,9 +107,14 @@ public class FolderSystem {
     public static string createNewSaveSlotDirectory(string gameName)
     {
         string defaultPath = getDefaultSaveSlotPath();
-        string path = defaultPath + "/" + gameName + "/" + sceneFolderName;
+        string path = getDefaulScenePath(gameName);
         createPath(defaultPath, gameName, sceneFolderName);
         return path;
+    }
+
+    public static string getGameDirectory(string gameName)
+    {
+        return getDefaultSaveSlotPath() + "/" + gameName;
     }
 
     public static string getDefaulScenePath(string gameName)
@@ -109,7 +122,7 @@ public class FolderSystem {
         return getDefaultSaveSlotPath() + "/" + gameName + "/" + sceneFolderName;
     }
 
-    public static string getSettingsFile()
+    public static string getSettingsPath()
     {
         return getDefaultSaveSlotPath() + "/" + settingsFileName + "." + settingsFileName;
     }
@@ -121,7 +134,7 @@ public class FolderSystem {
 
     public static string getDefaultSaveSlotPath()
     {
-        return Application.persistentDataPath + "/" + saveOrderName;
+        return Application.persistentDataPath + "/" + saveDirName;
     }
 
     public static string getGameSavePath(SaveableGame game)
@@ -149,7 +162,7 @@ public class FolderSystem {
     public static string getSceneSavePath(string gameName, string sceneName)
     {
         string result = Application.persistentDataPath + "/" +
-            saveOrderName + "/" + gameName + "/" + sceneFolderName + "/" +
+            saveDirName + "/" + gameName + "/" + sceneFolderName + "/" +
             sceneName + "." + fileType;
         return result;
     }

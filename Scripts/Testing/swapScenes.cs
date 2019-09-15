@@ -16,17 +16,17 @@ public class swapScenes : MonoBehaviour
         {
             if (dir)
             {
-                SceneSwitcher.enterScene("SmallTestScene", true, true);
+                SceneSwitcher.EnterScene("SmallTestScene", true, true);
             }
             else
             {
                 if (count == 0)
                 {
-                    SceneSwitcher.enterScene("EmptyScene", true, true, saveableObject);
+                    SceneSwitcher.EnterScene("EmptyScene", true, true, saveableObject);
                 }
                 else
                 {
-                    SceneSwitcher.enterScene("EmptyScene", true, true);
+                    SceneSwitcher.EnterScene("EmptyScene", true, true);
                 }
                
             }

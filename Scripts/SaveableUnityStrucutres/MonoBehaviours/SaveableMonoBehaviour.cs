@@ -68,14 +68,20 @@ public abstract class SaveableMonoBehaviour : BaseSaveableMonoBehaviour
     public sealed override void onBehaviourLoaded()
     {
         enabled = isEnabled;
-        behaviourLoaded();
-        onAwake();
+        BehaviourLoaded();
+        OnAwake();
     }
+
+    /// <summary>
+    /// this method will only get called the first time an object is instantiated,
+    /// and not when it was loaded later in game.
+    /// </summary>
+    protected virtual void OnFirstTimeBehaviourAwakend() { }
 
     /// <summary>
     /// will get called instead on "onAwake" when the game was loaded
     /// </summary>
-    protected virtual void behaviourLoaded() { }
+    protected virtual void BehaviourLoaded() { }
  
     protected virtual void onDestroy() { }
     
@@ -91,7 +97,8 @@ public abstract class SaveableMonoBehaviour : BaseSaveableMonoBehaviour
         ///only call virutal "onAwake" method when the object was not loaded.
         if (SaveableGame.FirstTimeSceneLoaded)
         {
-            onAwake();
+            OnAwake();
+            OnFirstTimeBehaviourAwakend();
         }
     }
 

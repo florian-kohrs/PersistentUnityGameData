@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface ISaveableGameObject
+public interface ISaveableGameObject : IComponentAssigner
 {
 
     bool IsTransferable { get; }
@@ -15,6 +15,8 @@ public interface ISaveableGameObject
     bool findAndSetParent();
 
     bool findAndSetParent(out Stack<int> hirachy);
+
+    void ResetChildNodes();
 
     IRestorableGameObject saveObjectAndPrepareScripts();
 

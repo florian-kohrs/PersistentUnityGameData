@@ -18,7 +18,7 @@ public class SceneSwitcher
     {
         if (instance == null)
         {
-            instance = PersistentGameDataController.PrepareSceneSwitcher();
+            instance = PersistentGameDataController.GetSceneSwitcher();
         }
         return instance;
     }
@@ -33,22 +33,11 @@ public class SceneSwitcher
     /// <param name="saveCurrent">should the current scene be saved?</param>
     /// <param name="loadNext">should the next scene be loaded?</param>
     /// <param name="transferObjects">theese objects will be taken to the next scene</param>
-    public static void enterScene(string sceneName, bool saveCurrent = true, 
+    public static void EnterScene(string sceneName, bool saveCurrent = true, 
         bool loadNext = true, params ISaveableGameObject[] transferObjects)
     {
         getInstance().gameDataController.enterScene(sceneName, 
             saveCurrent, loadNext, transferObjects);
     }
-    
 
-    /// <summary>
-    /// enters the new scene while saving the current and loading the next one
-    /// </summary>
-    /// <param name="sceneName"></param>
-    /// <param name="transferObjects"></param>
-    public static void enterScene(string sceneName, 
-        params ISaveableGameObject[] transferObjects)
-    {
-        getInstance().gameDataController.enterScene(sceneName, transferObjects);
-    }
 }

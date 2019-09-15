@@ -13,7 +13,7 @@ public class SaveableScriptableObject : ScriptableObject, ITransformObject, IAss
     {
         return this;
     }
-
+    
     public IAssetReferencer GetReferencer()
     {
         return assetRef?.GetReferencer();
