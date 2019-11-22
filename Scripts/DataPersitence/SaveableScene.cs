@@ -329,12 +329,22 @@ public class SaveableScene
     /// <returns></returns>
     public static Transform getTransformFromPath(Transform start, Stack<int> path, out int lastInt)
     {
+        if (start == null)
+        {
+            Debug.Log("Transform is null!!!!!!!!!!!!!!!!!!!!!!!!");
+        }
+        else
+        {
+            Debug.Log("Beginn searching Transform. Start element is: " + start.name);
+        }
         Transform result = start;
 
         lastInt = 0;
         int count = 0;
         foreach (int i in path)
         {
+            Debug.Log(count + ". path is " +  i);
+            Debug.Log("Current parent (" + result.name + ") has " + result.childCount + " children");
             lastInt = i;
             result = result.GetChild(lastInt);
             count++;
