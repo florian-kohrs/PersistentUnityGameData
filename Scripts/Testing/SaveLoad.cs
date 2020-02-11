@@ -21,7 +21,7 @@ public class SaveLoad : MonoBehaviour
 
     public static void Save()
     {
-        if (GameManager.IsPlayerAlive)
+        //if (GameManager.IsPlayerAlive)
         {
             PersistentGameDataController.SaveGame(GameSaveName);
         }
