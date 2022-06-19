@@ -18,9 +18,9 @@ public interface ISaveableGameObject : IComponentAssigner
 
     void ResetChildNodes();
 
-    IRestorableGameObject saveObjectAndPrepareScripts();
+    IRestorableGameObject SaveObjectAndPrepareScripts();
 
-    void saveAllBehaviours(PersistentGameDataController.SaveType saveType);
+    void SaveAllBehaviours(GamePersistence.SaveType saveType);
 
     void addChildren(ISaveableGameObject gameObject, Stack<int> hirachyPath);
 

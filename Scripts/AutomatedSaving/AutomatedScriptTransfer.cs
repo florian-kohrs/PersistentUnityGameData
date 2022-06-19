@@ -9,7 +9,7 @@ using UnityEngine;
 public static class AutomatedScriptTransfer
 {
 
-    public static void transferScriptsSaving(object source, Dictionary<string, object> target, PersistentGameDataController.SaveType transferState)
+    public static void TransferScriptsSaving(object source, Dictionary<string, object> target, GamePersistence.SaveType transferState)
     {
         Type sourceType = source.GetType();
 
@@ -22,17 +22,39 @@ public static class AutomatedScriptTransfer
                 SaveAttribute currentSaveAttribute = (SaveAttribute)
                     (f.GetCustomAttributes(savedAttribute, false)[0]);
 
-                if ((transferState == PersistentGameDataController.SaveType.Game && currentSaveAttribute.saveForScene)
-                    || (transferState == PersistentGameDataController.SaveType.Scene && currentSaveAttribute.saveForGame))
+                if ((transferState == GamePersistence.SaveType.Game && currentSaveAttribute.saveForScene)
+                    || (transferState == GamePersistence.SaveType.Scene && currentSaveAttribute.saveForGame))
                 {
-                    object value = getValue(f.GetValue(source));
+                    object value = GetTransformedValue(f.GetValue(source));
                     target.Add(f.Name, value);
                 }
             }
         }
     }
 
-    public static void restoreData(Dictionary<string, object> source,
+    public static void TransferStaticScriptsSaving(Type t, Dictionary<string, object> target, GamePersistence.SaveType transferState)
+    {
+
+        Type savedAttribute = typeof(SaveAttribute);
+
+        foreach (FieldInfo f in getFieldsFromType(t, typeof(object), false))
+        {
+            if (f.IsStatic && f.IsDefined(savedAttribute, true))
+            {
+                SaveAttribute currentSaveAttribute = (SaveAttribute)
+                    (f.GetCustomAttributes(savedAttribute, false)[0]);
+
+                if ((transferState == GamePersistence.SaveType.Game && currentSaveAttribute.saveForScene)
+                    || (transferState == GamePersistence.SaveType.Scene && currentSaveAttribute.saveForGame))
+                {
+                    object value = GetTransformedValue(f.GetValue(null));
+                    target.Add(f.Name, value);
+                }
+            }
+        }
+    }
+
+    public static void RestoreData(Dictionary<string, object> source,
         ISaveableComponent target, Type lastSerializedType)
     {
         FieldInfo[] fields = getFieldsFromType(target.GetType(), lastSerializedType);
@@ -40,7 +62,19 @@ public static class AutomatedScriptTransfer
         foreach (KeyValuePair<string, object> entry in source)
         {
             fields.Where(field => field.Name == entry.Key).First().
-                setValue(target, getValue(entry.Value));
+                setValue(target, GetTransformedValue(entry.Value));
+        }
+    }
+
+    public static void RestoreStaticData(Dictionary<string, object> source,
+        Type t)
+    {
+        FieldInfo[] fields = getFieldsFromType(t, typeof(object),false);
+
+        foreach (KeyValuePair<string, object> entry in source)
+        {
+            fields.Where(field => field.Name == entry.Key).First().
+                setValue(null, GetTransformedValue(entry.Value));
         }
     }
 
@@ -50,7 +84,7 @@ public static class AutomatedScriptTransfer
 
         ///add all public and private fields of current type
         fields.AddRange(target.GetFields((BindingFlags.Public
-            | BindingFlags.NonPublic | BindingFlags.Instance)));
+            | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)));
 
         ///add all private fields of parent types. Stops after type "BaseSaveableMonoBehaviour" 
         Type parentType = target;
@@ -58,7 +92,7 @@ public static class AutomatedScriptTransfer
         {
             parentType = parentType.BaseType;
             fields.AddRange(parentType.GetFields((
-                BindingFlags.NonPublic | BindingFlags.Instance)).Where(f => !f.IsFamily));
+                BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).Where(f => !f.IsFamily));
         }
 
         return fields.ToArray();
@@ -70,7 +104,7 @@ public static class AutomatedScriptTransfer
     /// </summary>
     /// <param name="source"></param>
     /// <returns></returns>
-    private static object getValue(object source)
+    private static object GetTransformedValue(object source)
     {
         object result = source;
 
@@ -166,7 +200,7 @@ public static class AutomatedScriptTransfer
 
         foreach (FieldInfo f in targetFields)
         {
-            target.Add(f.Name, getValue(f.GetValue(source)));
+            target.Add(f.Name, GetTransformedValue(f.GetValue(source)));
         }
 
     }

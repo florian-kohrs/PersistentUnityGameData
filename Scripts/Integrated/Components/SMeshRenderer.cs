@@ -13,7 +13,7 @@ public class SMeshRenderer : SaveableUnityComponent<MeshRenderer>
         component.enabled = isEnabled;
     }
 
-    protected override void saveComponent(MeshRenderer component, PersistentGameDataController.SaveType saveType)
+    protected override void saveComponent(MeshRenderer component, GamePersistence.SaveType saveType)
     {
         isEnabled = component.enabled;
     }

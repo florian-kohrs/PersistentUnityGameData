@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 public class SaveableGame
 {
 
-    public SaveableGame(PersistentGameDataController gameDataController)
+    public SaveableGame(GamePersistence gameDataController)
     {
         GameDataController = gameDataController;
     }
@@ -27,12 +27,12 @@ public class SaveableGame
     {
         get
         {
-            return !PersistentGameDataController.IsLoading
-                || SaveableGame.getCurrentGame().keepExistingObjects;
+            return !GamePersistence.IsLoading
+                || GetCurrentGame().keepExistingObjects;
         }
         set
         {
-            SaveableGame.getCurrentGame().keepExistingObjects = value;
+            GetCurrentGame().keepExistingObjects = value;
         }
     }
 
@@ -46,7 +46,7 @@ public class SaveableGame
         get
         {
             return FirstTimeSceneLoaded
-                || SaveableGame.getCurrentGame().IsInstantiating;
+                || GetCurrentGame().IsInstantiating;
         }
     }
 
@@ -59,9 +59,9 @@ public class SaveableGame
     /// and access other useful properties
     /// </summary>
     [System.NonSerialized]
-    private static PersistentGameDataController gameDataController = null;
+    private static GamePersistence gameDataController = null;
 
-    private static PersistentGameDataController GameDataController
+    private static GamePersistence GameDataController
     {
         get { return gameDataController; }
         set { gameDataController = value; }
@@ -73,6 +73,7 @@ public class SaveableGame
     /// </summary>
     [System.NonSerialized]
     private List<SaveableScene> allScenes = new List<SaveableScene>();
+
 
     /// <summary>
     /// Contains all scenes, which where loaded (entered) during the current play session
@@ -108,14 +109,24 @@ public class SaveableGame
     [System.NonSerialized]
     private bool keepExistingObjects;
 
-    #endregion
-
-    #region serialized fields and its properties (+getter and setter)
 
     /// <summary>
     /// used to save data, that is not bound to a gameobject
     /// </summary>
-    private List<object> staticGameData = new List<object>();
+    [System.NonSerialized]
+    private List<Type> staticGameData;
+
+    private List<Type> StaticGameData
+    {
+        get
+        {
+            if(staticGameData == null)
+            {
+                staticGameData = new List<Type>(); 
+            }
+            return staticGameData;
+        }
+    }
 
     /// <summary>
     /// adds any type which is serializable 
@@ -123,19 +134,21 @@ public class SaveableGame
     /// <typeparam name="T"></typeparam>
     /// <param name="data"></param>
     /// <returns></returns>
-    private void addStaticGameData<T>(T data)
+    private void AddStaticGameData_(Type staticDataType)
     {
-        if (typeof(T).IsSerializable/* .IsDefined(typeof(ISerializable), true)*/)
+        //if (typeof(T).IsSerializable/* .IsDefined(typeof(ISerializable), true)*/)
         {
-            staticGameData.Add(data);
+            StaticGameData.Add(staticDataType);
         }
-        else
-        {
-            throw new Exception("Tried to add type " + typeof(T).Name + 
-                " to static data list, but type " + typeof(T).Name + 
-                " is not marked as serializable!");
-        }
+        //else
+        //{
+        //    throw new Exception("Tried to add type " + typeof(T).Name +
+        //        " to static data list, but type " + typeof(T).Name +
+        //        " is not marked as serializable!");
+        //}
     }
+
+
 
     /// <summary>
     /// adds any type which is marked as serializable to 
@@ -145,10 +158,17 @@ public class SaveableGame
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="data"></param>
-    public static void addGameData<T>(T data)
+    public static void AddStaticGameData(Type staticDataType)
     {
-        getCurrentGame().addStaticGameData(data);
+        GetCurrentGame().AddStaticGameData_(staticDataType);
     }
+
+    #endregion
+
+    #region serialized fields and its properties (+getter and setter)
+
+
+    private Dictionary<string, Dictionary<string, object>> savedStaticData;
 
     private string gameName;
 
@@ -161,14 +181,14 @@ public class SaveableGame
 
     public DateTime SaveTime { get; set; }
     
-    public void setCurrentScene(string sceneName)
+    public void SetCurrentScene(string sceneName)
     {
         CurrentScene = getScene(sceneName);
     }
 
     #endregion
     
-    public void loadGame(PersistentGameDataController gameDataController)
+    public void loadGame(GamePersistence gameDataController)
     {
         SaveableGame.GameDataController = gameDataController;
 
@@ -191,9 +211,9 @@ public class SaveableGame
     /// calls "saveScene" for the current scene
     /// </summary>
     /// <param name="saveType"></param>
-    public void saveCurrentScene(PersistentGameDataController.SaveType saveType)
+    public void saveCurrentScene(GamePersistence.SaveType saveType)
     {
-        currentScene.saveScene(saveType);
+        currentScene.SaveScene(saveType);
     }
 
     /// <summary>
@@ -201,9 +221,36 @@ public class SaveableGame
     /// </summary>
     /// <param name="saveType"></param>
     public List<IRestorableGameObject> saveCurrentScene(
-        PersistentGameDataController.SaveType saveType, List<ISaveableGameObject> ignoreForSave)
+        GamePersistence.SaveType saveType, List<ISaveableGameObject> ignoreForSave)
     {
-        return currentScene.saveScene(saveType, ignoreForSave);
+        return currentScene.SaveScene(saveType, ignoreForSave);
+    }
+
+    public void SaveStaticValues()
+    {
+        savedStaticData = new Dictionary<string, Dictionary<string, object>>();
+        foreach (Type t in StaticGameData)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            AutomatedScriptTransfer.TransferStaticScriptsSaving(t, dict, GamePersistence.SaveType.Game);
+            string type = t.AssemblyQualifiedName;
+            savedStaticData[type] = dict;
+        }    
+    }
+
+    /// <summary>
+    /// loads all static members from saved types
+    /// </summary>
+    private void LoadStaticData()
+    {
+        if (savedStaticData != null)
+        {
+            foreach (KeyValuePair<string, Dictionary<string, object>> classStaticMembers in savedStaticData)
+            {
+                Type t = Type.GetType(classStaticMembers.Key);
+                AutomatedScriptTransfer.RestoreStaticData(classStaticMembers.Value, t);
+            }
+        }
     }
 
     /// <summary>
@@ -249,12 +296,14 @@ public class SaveableGame
         return result;
     }
 
-    public void restoreCurrentSceneObjects(PersistentGameDataController.GameLoadInitiated gameLoadEvent, bool restoreData)
+    public void restoreCurrentSceneObjects(GamePersistence.GameLoadInitiated gameLoadEvent, bool restoreData)
     {
         IsInstantiating = true;
         CurrentScene.restoreScene(gameLoadEvent, restoreData);
+        LoadStaticData();
         IsInstantiating = false;
     }
+
 
     /// <summary>
     /// will add the scene
@@ -341,7 +390,7 @@ public class SaveableGame
     /// <param name="gameObject"></param>
     public static void addObjectToGarbageHeap(GameObject gameObject)
     {
-        SaveableScene currentScene = getCurrentGame().CurrentScene;
+        SaveableScene currentScene = GetCurrentGame().CurrentScene;
         currentScene.GarbageHeap.Push(gameObject);
     }
 
@@ -355,7 +404,7 @@ public class SaveableGame
 
     public static void addObjectToCurrentScene(ISaveableGameObject gameObject)
     {
-        SaveableScene currentScene = getCurrentGame().CurrentScene;
+        SaveableScene currentScene = GetCurrentGame().CurrentScene;
         currentScene.AllInGameObjects.Add(gameObject);
     }
 
@@ -367,9 +416,11 @@ public class SaveableGame
         }
     }
 
+
+
     public static void removeObjectFromSavedList(ISaveableGameObject gameObject)
     {
-        SaveableScene currentScene = getCurrentGame().CurrentScene;
+        SaveableScene currentScene = GetCurrentGame().CurrentScene;
         currentScene.AllInGameObjects.Remove(gameObject);
     }
 
@@ -378,15 +429,15 @@ public class SaveableGame
     /// (if there is none, the current scene is used to create a new Game)
     /// </summary>
     /// <returns></returns>
-    private static SaveableGame getCurrentGame()
+    private static SaveableGame GetCurrentGame()
     {
         if(GameDataController == null)
         {
-            Debug.LogWarning("Current Game was requested before the game was loaded. " +
-                "This should be avoided by loading an existing game or starting a new one out of a menue" +
-                " with no saveable objects in its scene.");
+            //Debug.LogWarning("Current Game was requested before the game was loaded. " +
+            //    "This should be avoided by loading an existing game or starting a new one out of a menue" +
+            //    " with no saveable objects in its scene.");
 
-            PersistentGameDataController.EnterRunningGame();
+            GamePersistence.EnterRunningGame();
         }
 
         return GameDataController.GetCurrentGame();

@@ -8,6 +8,6 @@ public interface ISaveableComponent
     IRestorableComponent createRestoreableComponent();
 
     IRestorableComponent saveComponent(GameObject gameObject, 
-        IComponentAssigner assigner, PersistentGameDataController.SaveType saveType);
+        IComponentAssigner assigner, GamePersistence.SaveType saveType);
     
 }

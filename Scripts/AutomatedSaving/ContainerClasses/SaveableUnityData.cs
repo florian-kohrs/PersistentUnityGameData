@@ -43,7 +43,7 @@ public abstract class SaveableUnityData : IRestorableComponentContainer, ITransf
 
     public ISaveableComponent restoreComponent(IComponentAssigner assigner)
     {
-        AutomatedScriptTransfer.restoreData(values, createdComponent, LastSerializedType);
+        AutomatedScriptTransfer.RestoreData(values, createdComponent, LastSerializedType);
         componentRestored(createdComponent, assigner);
         return createdComponent;
     }

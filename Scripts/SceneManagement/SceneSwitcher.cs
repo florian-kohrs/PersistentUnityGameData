@@ -5,12 +5,12 @@ using UnityEngine;
 public class SceneSwitcher
 {
 
-    public SceneSwitcher(PersistentGameDataController gameDataController)
+    public SceneSwitcher(GamePersistence gameDataController)
     {
         this.gameDataController = gameDataController;
     }
 
-    private PersistentGameDataController gameDataController;
+    private GamePersistence gameDataController;
 
     private static SceneSwitcher instance;
 
@@ -18,7 +18,7 @@ public class SceneSwitcher
     {
         if (instance == null)
         {
-            instance = PersistentGameDataController.GetSceneSwitcher();
+            instance = GamePersistence.GetSceneSwitcher();
         }
         return instance;
     }

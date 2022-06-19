@@ -78,10 +78,10 @@ public class SaveableScene
     /// "DirtyData" is set to true, so this scene will be saved to fíle upon next game save.
     /// </summary>
     /// <param name="saveState"></param>
-    public void saveScene(PersistentGameDataController.SaveType saveState)
+    public void SaveScene(GamePersistence.SaveType saveState)
     {
         List<ISaveableGameObject> empty = new List<ISaveableGameObject>();
-        saveScene(saveState, empty);
+        SaveScene(saveState, empty);
     }
 
     /// <summary>
@@ -94,9 +94,9 @@ public class SaveableScene
     /// <param name="ignoreForSave">hand any gameobject over that shall not be saved. 
     /// instead their theirs trees of restoreableGameobejcts are returned
     /// usefull to take gameobject to the next scene</param>
-    /// <returns>this functions returns the unsaved objects, since its very
+    /// <returns>this functions returns the saved version of the unsaved objects, since its very
     /// likely that they shall be transfered to another scene</returns>
-    public List<IRestorableGameObject> saveScene(PersistentGameDataController.SaveType saveState,
+    public List<IRestorableGameObject> SaveScene(GamePersistence.SaveType saveState,
         List<ISaveableGameObject> ignoreForSave)
     {
         List<IRestorableGameObject> result = new List<IRestorableGameObject>();
@@ -135,21 +135,21 @@ public class SaveableScene
         foreach (ITreeNode<ISaveableGameObject> gameObject in saveableObjectTree.getAllNodesWithValues())
         {
             RestoreableObjectTree.add
-                (gameObject.Value.saveObjectAndPrepareScripts(), gameObject.getFullTreePath());
+                (gameObject.Value.SaveObjectAndPrepareScripts(), gameObject.getFullTreePath());
         }
 
         ///even though the object is not saved in this scene the restoreable objects are
         ///still created and returned as result so they can be used in other scenes
         foreach (ISaveableGameObject gameObject in ignoreForSave)
         {
-            result.Add(gameObject.saveObjectAndPrepareScripts());
+            result.Add(gameObject.SaveObjectAndPrepareScripts());
         }
 
         IList<ISaveableGameObject> savedObjects = saveableObjectTree.getValues();
         ///after all object with their scripts were initiated the scripts values are saved
         foreach (ISaveableGameObject gameObject in savedObjects)
         {
-            gameObject.saveAllBehaviours(saveState);
+            gameObject.SaveAllBehaviours(saveState);
         }
 
         ///all not saved objects are saved aswell. however their restoreable references 
@@ -157,7 +157,7 @@ public class SaveableScene
         ///so they can be used in other scenes
         foreach (ISaveableGameObject gameObject in ignoreForSave)
         {
-            gameObject.saveAllBehaviours(saveState);
+            gameObject.SaveAllBehaviours(saveState);
         }
 
         ///deleting all children for next save
@@ -182,7 +182,7 @@ public class SaveableScene
     /// restores the whole saved scene
     /// </summary>
     /// <param name="onSetDataInitiated"></param>
-    public void restoreScene(PersistentGameDataController.GameLoadInitiated onSetDataInitiated, bool restoreData)
+    public void restoreScene(GamePersistence.GameLoadInitiated onSetDataInitiated, bool restoreData)
     {
         if (restoreData)
         {
@@ -252,7 +252,7 @@ public class SaveableScene
             t.SetParent(null);
             ///the order of the objects is one of the most important things in the process of restoring the 
             ///saved scene. all prefabs must be set as last prefabs so the parent hirachy of the root elements 
-            ///is not adulterated
+            ///will not get messed with
             t.SetAsLastSibling();
         }
 
@@ -270,6 +270,7 @@ public class SaveableScene
             )
             , treeNode.Key);
         }
+
 
     }
 

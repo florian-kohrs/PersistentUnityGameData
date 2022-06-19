@@ -23,15 +23,15 @@ public class SaveLoad : MonoBehaviour
     {
         //if (GameManager.IsPlayerAlive)
         {
-            PersistentGameDataController.SaveGame(GameSaveName);
+            GamePersistence.SaveGame(GameSaveName);
         }
     }
 
     public static void Load()
     {
-        if (PersistentGameDataController.IsValidSavedGame(GameSaveName))
+        if (GamePersistence.IsValidSavedGame(GameSaveName))
         {
-            PersistentGameDataController.LoadGame(GameSaveName);
+            GamePersistence.LoadGame(GameSaveName);
         }
     }
 
