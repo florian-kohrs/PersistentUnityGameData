@@ -26,12 +26,8 @@ public class SaveablePrefabRoot : BaseSaveableGameObject, IAssetRefMaintainer/*,
         }
     }
 
-    public new void prepareSceneTransition()
-    {
-        base.prepareSceneTransition();
-    }
 
-    protected override IRestorableGameObject createSerializableObject()
+    protected override IRestorableGameObject CreateSerializableObject()
     {
         return new SerializablePrefabRoot(gameObject, this);
     }

@@ -9,9 +9,9 @@ using UnityEngine;
 /// </summary>
 public abstract class BaseSaveableObject : MonoBehaviour, ISaveableComponent
 {
-    public abstract IRestorableComponent createRestoreableComponent();
+    public abstract IRestorableComponent CreateRestoreableComponent();
 
-    public abstract IRestorableComponent saveComponent(GameObject gameObject, 
+    public abstract IRestorableComponent SaveComponent(GameObject gameObject, 
         IComponentAssigner assigner, GamePersistence.SaveType saveType);
     
 }

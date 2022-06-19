@@ -12,9 +12,9 @@ public abstract class BaseSaveableGameObject : MonoBehaviour,
     ISaveableGameObject, ITransformObject, IComponentAssigner
 {
 
-    protected abstract IRestorableGameObject createSerializableObject();
+    protected abstract IRestorableGameObject CreateSerializableObject();
 
-    protected void initialize()
+    protected void Initialize()
     {
         if (childrenWithPath == null)
         {
@@ -55,7 +55,7 @@ public abstract class BaseSaveableGameObject : MonoBehaviour,
         ///save all registered components and add reference to restoreable list
         foreach (ISaveableComponent component in saveableComponents)
         {
-            restorableComponent = component.createRestoreableComponent();
+            restorableComponent = component.CreateRestoreableComponent();
             CreatedSerializableGameObject.addComponent(restorableComponent);
         }
     }
@@ -69,7 +69,7 @@ public abstract class BaseSaveableGameObject : MonoBehaviour,
     {
         foreach (ISaveableComponent b in saveableComponents)
         {
-            b.saveComponent(gameObject, this, saveState);
+            b.SaveComponent(gameObject, this, saveState);
         }
 
         foreach (ISaveableGameObject children in childrenWithPath.getValues())
@@ -81,7 +81,7 @@ public abstract class BaseSaveableGameObject : MonoBehaviour,
 
     protected virtual void Awake()
     {
-        initialize();
+        Initialize();
 
         ///if the object was not created during loading phase or the 
         ///load phase is creating all saved objects, or the scene is loaded in default state, add this object to saving list
@@ -97,7 +97,7 @@ public abstract class BaseSaveableGameObject : MonoBehaviour,
     /// </summary>
     /// <param name="child">element to add</param>
     /// <param name="childpath">children path of gameObjects names to real parent</param>
-    public void addChildren(ISaveableGameObject child, Stack<int> childpath)
+    public void AddChildren(ISaveableGameObject child, Stack<int> childpath)
     {
         childrenWithPath.add(child, childpath);
     }
@@ -117,10 +117,10 @@ public abstract class BaseSaveableGameObject : MonoBehaviour,
         }
     }
     
-    public bool findAndSetParent()
+    public bool FindAndSetParent()
     {
         Stack<int> _ = new Stack<int>();
-        return findAndSetParent(out _);
+        return FindAndSetParent(out _);
     }
 
     /// <summary>
@@ -128,9 +128,9 @@ public abstract class BaseSaveableGameObject : MonoBehaviour,
     /// return true when a parent was set.
     /// </summary>
     /// <returns>return true when a parent was set</returns>
-    public bool findAndSetParent(out Stack<int> hirachyPath)
+    public bool FindAndSetParent(out Stack<int> hirachyPath)
     {
-        hirachyPath = setParent();
+        hirachyPath = SetParent();
         return !IsRootObject;
     }
 
@@ -138,7 +138,7 @@ public abstract class BaseSaveableGameObject : MonoBehaviour,
     /// will set the current Parent aswell as adding this object to the parents children.
     /// Returns the hirachy child index as list starting from the parent object
     /// </summary>
-    protected virtual Stack<int> setParent()
+    protected virtual Stack<int> SetParent()
     {
         Stack<int> result = new Stack<int>();
 
@@ -167,7 +167,7 @@ public abstract class BaseSaveableGameObject : MonoBehaviour,
             ///as its not needed to find its own child
             //Debug.Log("Transform has parent so the last index is deleted");
             result.Pop();
-            parent.addChildren(this, result);
+            parent.AddChildren(this, result);
         }
         
         return result;
@@ -181,9 +181,9 @@ public abstract class BaseSaveableGameObject : MonoBehaviour,
     /// <returns></returns>
     public IRestorableGameObject SaveObjectAndPrepareScripts()
     {
-        CreatedSerializableGameObject = createSerializableObject();
+        CreatedSerializableGameObject = CreateSerializableObject();
 
-        saveableComponents = findAllSaveableComponents();
+        saveableComponents = FindAllSaveableComponents();
 
         instantiateSaveableComponents();
 
@@ -212,15 +212,15 @@ public abstract class BaseSaveableGameObject : MonoBehaviour,
     /// <summary>
     /// will 
     /// </summary>
-    protected void prepareSceneTransition()
+    protected void PrepareSceneTransition()
     {
-        foreach (BaseSaveableGameObject g in findAllSaveableTransferableChilds(transform)){
+        foreach (BaseSaveableGameObject g in FindAllSaveableTransferableChilds(transform)){
             ///abstract the saving algorithm from saveablescene for no code redundance
         }
     }
 
 
-    private List<BaseSaveableGameObject> findAllSaveableTransferableChilds(Transform t)
+    private List<BaseSaveableGameObject> FindAllSaveableTransferableChilds(Transform t)
     {
         List<BaseSaveableGameObject> result = new List<BaseSaveableGameObject>();
 
@@ -237,7 +237,7 @@ public abstract class BaseSaveableGameObject : MonoBehaviour,
             }
             else
             {
-                result.AddRange(findAllSaveableTransferableChilds(child));
+                result.AddRange(FindAllSaveableTransferableChilds(child));
             }
         }
         return result;
@@ -246,12 +246,12 @@ public abstract class BaseSaveableGameObject : MonoBehaviour,
     /// <summary>
     /// finds all Components deriving from BaseSaveableObject
     /// </summary>
-    public ISaveableComponent[] findAllSaveableComponents()
+    public ISaveableComponent[] FindAllSaveableComponents()
     {
         return GetComponents<BaseSaveableObject>();
     }
 
-    public object getTransformedValue()
+    public object GetTransformedValue()
     {
         return CreatedSerializableGameObject;
     }
@@ -261,7 +261,7 @@ public abstract class BaseSaveableGameObject : MonoBehaviour,
         return gameObject;
     }
 
-    public int getSiblingIndex()
+    public int GetSiblingIndex()
     {
         return transform.GetSiblingIndex();
     }
@@ -274,7 +274,7 @@ public abstract class BaseSaveableGameObject : MonoBehaviour,
     [NonSerialized]
     Dictionary<Type,List<Component>> alreadySavedComponents = new Dictionary<Type, List<Component>>();
     
-    public T getComponent<T>() where T : Component
+    public T GetComponentAssigned<T>() where T : Component
     {
         T result = null;
         Type t = typeof(T);

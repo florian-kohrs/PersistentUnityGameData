@@ -11,14 +11,14 @@ public abstract class BaseSaveableMonoBehaviour : BaseSaveableObject, ITransform
     /// </summary>
     public bool WasCreated { get; set; }
     
-    public object getTransformedValue()
+    public object GetTransformedValue()
     {
         return CreatedSaveableMonoBehaviour;
     }
 
-    public abstract void setSaveData(GamePersistence.SaveType saveType);
+    public abstract void SetSaveData(GamePersistence.SaveType saveType);
     
-    public abstract void onBehaviourLoaded();
+    public abstract void OnBehaviourLoaded();
     
     /// <summary>
     /// onAwake is called when the normal awake is called, during loading phase
@@ -31,7 +31,7 @@ public abstract class BaseSaveableMonoBehaviour : BaseSaveableObject, ITransform
 
     private Dictionary<string, object> savedDictionary;
 
-    public override IRestorableComponent createRestoreableComponent()
+    public override IRestorableComponent CreateRestoreableComponent()
     {
         IRestorableComponentContainer savedScript = 
             new SaveableMonoBehaviourContainer(GetType());
@@ -45,10 +45,10 @@ public abstract class BaseSaveableMonoBehaviour : BaseSaveableObject, ITransform
         return result;
     }
 
-    public override IRestorableComponent saveComponent(GameObject gameObject, 
+    public override IRestorableComponent SaveComponent(GameObject gameObject, 
         IComponentAssigner assigner, GamePersistence.SaveType saveType)
     {
-        setSaveData(saveType);
+        SetSaveData(saveType);
         AutomatedScriptTransfer.TransferScriptsSaving(this, savedDictionary, saveType);
         return CreatedSaveableMonoBehaviour;
     }

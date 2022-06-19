@@ -8,7 +8,7 @@ public abstract class SaveableUnityComponent<T> : SaveableComponent, ITransformO
     public override void saveComponentValues(GameObject gameObject, 
         IComponentAssigner assigner, GamePersistence.SaveType saveType)
     {
-        Component = assigner.getComponent<T>();
+        Component = assigner.GetComponentAssigned<T>();
         saveComponent(Component, saveType);
     }
 
@@ -48,12 +48,12 @@ public abstract class SaveableUnityComponent<T> : SaveableComponent, ITransformO
     
     public sealed override ISaveableComponent restoreComponent(IComponentAssigner assigner)
     {
-        Component = assigner.getComponent<T>();
+        Component = assigner.GetComponentAssigned<T>();
         restoreComponent(Component);
         return this;
     }
     
-    public object getTransformedValue()
+    public object GetTransformedValue()
     {
         return CreatedSaveableComponent;
     }

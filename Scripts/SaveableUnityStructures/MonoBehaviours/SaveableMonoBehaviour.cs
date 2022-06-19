@@ -35,12 +35,12 @@ public abstract class SaveableMonoBehaviour : BaseSaveableMonoBehaviour
         set { isEnabled = value; }
     }
     
-    protected virtual void setDataBeforeSaving(GamePersistence.SaveType saveType) { }
+    protected virtual void SetDataBeforeSaving(GamePersistence.SaveType saveType) { }
     
-    public sealed override void setSaveData(GamePersistence.SaveType saveType)
+    public sealed override void SetSaveData(GamePersistence.SaveType saveType)
     {
         IsEnabled = enabled;
-        setDataBeforeSaving(saveType);
+        SetDataBeforeSaving(saveType);
     }
 
     /// <summary>
@@ -51,7 +51,7 @@ public abstract class SaveableMonoBehaviour : BaseSaveableMonoBehaviour
     /// </summary>
     /// <param name="subscribe"></param>
     /// <param name="unsubscribe"></param>
-    public void subscribeEvent(Action subscribe, Action unsubscribe)
+    public void SubscribeEvent(Action subscribe, Action unsubscribe)
     {
         subscribe();
 
@@ -65,7 +65,7 @@ public abstract class SaveableMonoBehaviour : BaseSaveableMonoBehaviour
     /// is called when the game was loaded, and the script is fully 
     /// initiated 
     /// </summary>
-    public sealed override void onBehaviourLoaded()
+    public sealed override void OnBehaviourLoaded()
     {
         enabled = isEnabled;
         BehaviourLoaded();
@@ -83,7 +83,7 @@ public abstract class SaveableMonoBehaviour : BaseSaveableMonoBehaviour
     /// </summary>
     protected virtual void BehaviourLoaded() { }
  
-    protected virtual void onDestroy() { }
+    protected virtual void OnDestroyed() { }
     
     /// <summary>
     /// do not override this method by any mean with the "new" keyword, as Unity
@@ -104,7 +104,7 @@ public abstract class SaveableMonoBehaviour : BaseSaveableMonoBehaviour
 
     protected void OnDestroy()
     {
-        onDestroy();
+        OnDestroyed();
         if (onDestroyEvent != null)
         {
             onDestroyEvent();

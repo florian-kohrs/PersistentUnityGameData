@@ -22,7 +22,7 @@ public class SaveableMonoBehaviourContainer : SaveableUnityData
 
     protected override void componentRestored(ISaveableComponent c, IComponentAssigner assigner)
     {
-        ((BaseSaveableMonoBehaviour)c).onBehaviourLoaded();
+        ((BaseSaveableMonoBehaviour)c).OnBehaviourLoaded();
     }
 
 }

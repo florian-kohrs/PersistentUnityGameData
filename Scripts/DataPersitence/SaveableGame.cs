@@ -193,7 +193,7 @@ public class SaveableGame
         SaveableGame.GameDataController = gameDataController;
 
         SaveableScene loadedScene = GameDataController.LoadSaveable<SaveableScene>
-                (FolderSystem.getSceneSavePath(GameName,
+                (FolderSystem.GetSceneSavePath(GameName,
                 CurrentSceneName));
 
         ///reset scene list so no changes made before loading are interfering
@@ -274,7 +274,7 @@ public class SaveableGame
             if (sceneExists(sceneName))
             {
                 ///if the scene exists in a file load it
-                result = GameDataController.LoadSaveable<SaveableScene>(FolderSystem.getSceneSavePath(GameName, sceneName));
+                result = GameDataController.LoadSaveable<SaveableScene>(FolderSystem.GetSceneSavePath(GameName, sceneName));
                 /////create new Scene list. Since its marked as "NonSerialized" its null after loading
                 //AllScenes = new List<SaveableScene>();
                 addScene(result);
@@ -336,7 +336,7 @@ public class SaveableGame
     {
         List<string> result = new List<string>();
 
-        string defaultScenePath = FolderSystem.getDefaulScenePath(GameName);
+        string defaultScenePath = FolderSystem.GetDefaulScenePath(GameName);
 
         ///read all scenes of current game
         foreach (string s in Directory.GetFiles(defaultScenePath))
@@ -370,7 +370,7 @@ public class SaveableGame
     public bool sceneExists(string sceneName)
     {
         return isSceneLoaded(sceneName) 
-            || FolderSystem.sceneExists(GameName, sceneName);
+            || FolderSystem.SceneExists(GameName, sceneName);
     }
     
     /// <summary>

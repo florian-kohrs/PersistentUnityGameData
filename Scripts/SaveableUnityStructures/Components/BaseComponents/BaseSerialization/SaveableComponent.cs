@@ -23,13 +23,13 @@ public abstract class SaveableComponent : BaseSaveableObject, IHybridComponent
     
     public IRestorableComponentContainer CreatedSaveableComponent { get; private set; }
     
-    public override IRestorableComponent createRestoreableComponent()
+    public override IRestorableComponent CreateRestoreableComponent()
     {
         CreatedSaveableComponent = new SaveableUnityComponentContainer(GetType());
         return CreatedSaveableComponent;
     }
 
-    public override IRestorableComponent saveComponent(GameObject gameObject, 
+    public override IRestorableComponent SaveComponent(GameObject gameObject, 
         IComponentAssigner assigner, GamePersistence.SaveType saveType)
     {
         saveComponentValues(gameObject, assigner, saveType);

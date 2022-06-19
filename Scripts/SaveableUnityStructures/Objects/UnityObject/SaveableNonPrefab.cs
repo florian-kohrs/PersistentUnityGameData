@@ -34,7 +34,7 @@ public class SaveableNonPrefab : BaseSaveableGameObject
 
     protected override void Awake()
     {
-        initialize();
+        Initialize();
 
         SaveableGame.addObjectToCurrentScene(this);
 
@@ -45,7 +45,7 @@ public class SaveableNonPrefab : BaseSaveableGameObject
 
     }
 
-    protected override IRestorableGameObject createSerializableObject()
+    protected override IRestorableGameObject CreateSerializableObject()
     {
         return new SerializableNonPrefab(gameObject, pathFromRoot);
     }

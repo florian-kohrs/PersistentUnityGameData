@@ -29,9 +29,9 @@ public class FolderSystem {
     /// </summary>
     /// <param name="path">path</param>
     /// <param name="startHere">start path that is guaranteed to exist</param>
-    public static void createPath(params string[] pathParts)
+    public static void CreatePath(params string[] pathParts)
     {
-        string currentPath = combine(pathParts);
+        string currentPath = Combine(pathParts);
 
         if (!Directory.Exists(currentPath))
         {
@@ -43,7 +43,7 @@ public class FolderSystem {
     /// creates the given relative path as asset directory.
     /// </summary>
     /// <param name="pathParts"></param>
-    public static void createAssetPath(params string[] pathParts)
+    public static void CreateAssetPath(params string[] pathParts)
     {
 #if UNITY_EDITOR
         if (pathParts != null && pathParts.Length > 0)
@@ -70,7 +70,7 @@ public class FolderSystem {
     /// </summary>
     /// <param name="pathParts"></param>
     /// <returns></returns>
-    public static string combine(params string[] pathParts)
+    public static string Combine(params string[] pathParts)
     {
         string result = "";
         Array.ForEach(pathParts, (p) => {
@@ -83,19 +83,19 @@ public class FolderSystem {
         return result;
     }
     
-    public static string[] getAllSaveSlotNames()
+    public static string[] GetAllSaveSlotNames()
     {
-        return Directory.GetDirectories(getDefaultSaveSlotPath());
+        return Directory.GetDirectories(GetDefaultSaveSlotPath());
     }
 
-    public static void createDefaultFolderSystem()
+    public static void CreateDefaultFolderSystem()
     {
-        createPath(Application.persistentDataPath, saveDirName);
+        CreatePath(Application.persistentDataPath, saveDirName);
     }
 
     public static void DeleteGame(SaveableGame game)
     {
-        string path = getGameDirectory(game.GameName);
+        string path = GetGameDirectory(game.GameName);
         Directory.Delete(path, true);
     }
 
@@ -104,62 +104,62 @@ public class FolderSystem {
     /// </summary>
     /// <param name="gameName"></param>
     /// <returns>return the full path for the scene folder</returns>
-    public static string createNewSaveSlotDirectory(string gameName)
+    public static string CreateNewSaveSlotDirectory(string gameName)
     {
-        string defaultPath = getDefaultSaveSlotPath();
-        string path = getDefaulScenePath(gameName);
-        createPath(defaultPath, gameName, sceneFolderName);
+        string defaultPath = GetDefaultSaveSlotPath();
+        string path = GetDefaulScenePath(gameName);
+        CreatePath(defaultPath, gameName, sceneFolderName);
         return path;
     }
 
-    public static string getGameDirectory(string gameName)
+    public static string GetGameDirectory(string gameName)
     {
-        return getDefaultSaveSlotPath() + "/" + gameName;
+        return GetDefaultSaveSlotPath() + "/" + gameName;
     }
 
-    public static string getDefaulScenePath(string gameName)
+    public static string GetDefaulScenePath(string gameName)
     {
-        return getDefaultSaveSlotPath() + "/" + gameName + "/" + sceneFolderName;
+        return GetDefaultSaveSlotPath() + "/" + gameName + "/" + sceneFolderName;
     }
 
-    public static string getSettingsPath()
+    public static string GetSettingsPath()
     {
-        return getDefaultSaveSlotPath() + "/" + settingsFileName + "." + settingsFileName;
+        return GetDefaultSaveSlotPath() + "/" + settingsFileName + "." + settingsFileName;
     }
 
-    public static string getDefaultSettingsPath()
+    public static string GetDefaultSettingsPath()
     {
-        return getDefaultSaveSlotPath();
+        return GetDefaultSaveSlotPath();
     }
 
-    public static string getDefaultSaveSlotPath()
+    public static string GetDefaultSaveSlotPath()
     {
         return Application.persistentDataPath + "/" + saveDirName;
     }
 
-    public static string getGameSavePath(SaveableGame game)
+    public static string GetGameSavePath(SaveableGame game)
     {
-        return getGameSavePath(game.GameName);
+        return GetGameSavePath(game.GameName);
     }
 
-    public static string getGameSavePath(string gameName)
+    public static string GetGameSavePath(string gameName)
     {
-        string result = getDefaultSaveSlotPath() + "/" + gameName + "/" + 
+        string result = GetDefaultSaveSlotPath() + "/" + gameName + "/" + 
             gameName+ "." + fileType;
         return result;
     }
     
-    public static bool sceneExists(string gameSlotName, string sceneName)
+    public static bool SceneExists(string gameSlotName, string sceneName)
     {
-        return File.Exists(getSceneSavePath(gameSlotName, sceneName));
+        return File.Exists(GetSceneSavePath(gameSlotName, sceneName));
     }
     
-    public static string getSceneSavePath(SaveableGame game, string sceneName)
+    public static string GetSceneSavePath(SaveableGame game, string sceneName)
     {
-        return getSceneSavePath(game.GameName, sceneName);
+        return GetSceneSavePath(game.GameName, sceneName);
     }
 
-    public static string getSceneSavePath(string gameName, string sceneName)
+    public static string GetSceneSavePath(string gameName, string sceneName)
     {
         string result = Application.persistentDataPath + "/" +
             saveDirName + "/" + gameName + "/" + sceneFolderName + "/" +

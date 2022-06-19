@@ -80,15 +80,15 @@ public class GamePersistence
 
     private GamePersistence()
     {
-        Debug.Log("Game Data will be saved here: " + FolderSystem.getDefaultSaveSlotPath());
+        Debug.Log("Game Data will be saved here: " + FolderSystem.GetDefaultSaveSlotPath());
 
-        initializeSavePath();
+        InitializeSavePath();
 
         CheckForExistingSettings();
 
         LoadSaveSlots();
 
-        initializeEvents();
+        InitializeEvents();
     }
 
     /// <summary>
@@ -96,7 +96,7 @@ public class GamePersistence
     /// </summary>
     private List<SaveableGame> allSavedGames = new List<SaveableGame>();
 
-    public int getAllSavedGamesCount()
+    public int GetAllSavedGamesCount()
     {
         return allSavedGames.Count;
     }
@@ -210,7 +210,7 @@ public class GamePersistence
     /// </summary>
     private void CheckForExistingSettings()
     {
-        string settingsSavepath = FolderSystem.getSettingsPath();
+        string settingsSavepath = FolderSystem.GetSettingsPath();
         ///initialize and save if not exisiting
         if (!File.Exists(settingsSavepath))
         {
@@ -231,10 +231,10 @@ public class GamePersistence
 
     private void SaveSettings_()
     {
-        Save(FolderSystem.getSettingsPath(), settings);
+        Save(FolderSystem.GetSettingsPath(), settings);
     }
 
-    private void initializeEvents()
+    private void InitializeEvents()
     {
         SceneManager.activeSceneChanged += delegate
         {
@@ -267,9 +267,9 @@ public class GamePersistence
         };
     }
 
-    private void initializeSavePath()
+    private void InitializeSavePath()
     {
-        FolderSystem.createDefaultFolderSystem();
+        FolderSystem.CreateDefaultFolderSystem();
     }
 
     public static SceneSwitcher GetSceneSwitcher()
@@ -426,7 +426,7 @@ public class GamePersistence
             if (currentGameIndex >= 0)
             {
                 CopyAllNotLoadedScenesToDirectory
-                    (FolderSystem.getDefaulScenePath(saveName));
+                    (FolderSystem.GetDefaulScenePath(saveName));
             }
             allSavedGames.Add(currentGame);
         }
@@ -437,7 +437,7 @@ public class GamePersistence
         {
             ///load old game and set it in the savedgame list
             allSavedGames[currentGameIndex] = LoadSaveable<SaveableGame>
-                (FolderSystem.getGameSavePath(oldGameName));
+                (FolderSystem.GetGameSavePath(oldGameName));
         }
 
         resultMessage = "Game saved.";
@@ -472,10 +472,10 @@ public class GamePersistence
 
     private void SaveGameAndScenesToFile(string saveName)
     {
-        FolderSystem.createNewSaveSlotDirectory(saveName);
+        FolderSystem.CreateNewSaveSlotDirectory(saveName);
 
         ///save game
-        Save(FolderSystem.getGameSavePath(currentGame.GameName), currentGame);
+        Save(FolderSystem.GetGameSavePath(currentGame.GameName), currentGame);
 
         ///create or overwrite all changed scenes
         foreach (SaveableScene s in currentGame.AllScenes)
@@ -483,7 +483,7 @@ public class GamePersistence
             ///if the scene exists, but was not changed since the last save, it doesnt need to be saved again
             if (s.DirtyData)
             {
-                Save(FolderSystem.getSceneSavePath(currentGame, s.SceneName), s);
+                Save(FolderSystem.GetSceneSavePath(currentGame, s.SceneName), s);
                 s.DirtyData = false;
             }
         }
@@ -494,10 +494,10 @@ public class GamePersistence
     /// </summary>
     public void LoadSaveSlots()
     {
-        foreach (string s in FolderSystem.getAllSaveSlotNames())
+        foreach (string s in FolderSystem.GetAllSaveSlotNames())
         {
             SaveableGame game = LoadSaveable<SaveableGame>
-                (FolderSystem.getGameSavePath(Path.GetFileName(s)));
+                (FolderSystem.GetGameSavePath(Path.GetFileName(s)));
             allSavedGames.Add(game);
         }
     }
@@ -570,7 +570,7 @@ public class GamePersistence
 
             ///reload game out of file (in case a reference changed something)
             allSavedGames[index] = LoadSaveable<SaveableGame>
-                (FolderSystem.getGameSavePath(allSavedGames[index].GameName));
+                (FolderSystem.GetGameSavePath(allSavedGames[index].GameName));
 
             timer.addCheckPoint("read data out of file");
 

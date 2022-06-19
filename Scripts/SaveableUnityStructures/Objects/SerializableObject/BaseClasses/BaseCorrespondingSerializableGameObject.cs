@@ -205,7 +205,7 @@ public abstract class BaseCorrespondingSerializableGameObject :
         return gameObject;
     }
 
-    public object getTransformedValue()
+    public object GetTransformedValue()
     {
         return inGameObject;
     }
@@ -235,7 +235,7 @@ public abstract class BaseCorrespondingSerializableGameObject :
         }
     }
     
-    public T getComponent<T>() where T : Component
+    public T GetComponentAssigned<T>() where T : Component
     {
         T result = null;
         Type t = typeof(T);

@@ -123,7 +123,7 @@ public class SaveableScene
             ///their parent, the hirachy of the non saved objects are not lost
             if (!ignoreForSave.Contains(gameObject))
             {
-                if (!gameObject.findAndSetParent(out currentHirachy))
+                if (!gameObject.FindAndSetParent(out currentHirachy))
                 {
                     saveableObjectTree.add(gameObject, currentHirachy);
                 }

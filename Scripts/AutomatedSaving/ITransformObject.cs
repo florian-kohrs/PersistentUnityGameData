@@ -9,6 +9,6 @@ using UnityEngine;
 public interface ITransformObject
 {
 
-    object getTransformedValue();
+    object GetTransformedValue();
 
 }

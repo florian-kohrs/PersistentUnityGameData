@@ -120,7 +120,7 @@ public class AssetPathFixer
         ///only move the asset when its not already located in the resourceFolder
         if (currentPath.IndexOf(RelativeResourceFolderPath) != 0)
         {
-            FolderSystem.createAssetPath(newRelativePrefabDirectory.Split('/'));
+            FolderSystem.CreateAssetPath(newRelativePrefabDirectory.Split('/'));
             assetMoveErrorMessage = AssetDatabase.MoveAsset(currentPath, newRelativeAssetPath);
         }
 

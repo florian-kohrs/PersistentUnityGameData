@@ -111,7 +111,7 @@ public static class AutomatedScriptTransfer
         if (result is ITransformObject)
         {
             ITransformObject transformObject = (ITransformObject)result;
-            result = transformObject.getTransformedValue();
+            result = transformObject.GetTransformedValue();
         }
         //else
         //{

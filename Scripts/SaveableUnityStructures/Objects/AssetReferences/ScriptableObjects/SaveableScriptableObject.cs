@@ -19,7 +19,7 @@ public class SaveableScriptableObject : ScriptableObject, ITransformObject, IAss
         return assetRef?.GetReferencer();
     }
 
-    public object getTransformedValue()
+    public object GetTransformedValue()
     {
         return assetRef;
     }

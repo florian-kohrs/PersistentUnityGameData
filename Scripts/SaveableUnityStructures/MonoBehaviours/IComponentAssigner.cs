@@ -11,7 +11,7 @@ using UnityEngine;
 public interface IComponentAssigner
 {
 
-    T getComponent<T>() where T : Component;
+    T GetComponentAssigned<T>() where T : Component;
 
     void ResetAssigner();
 

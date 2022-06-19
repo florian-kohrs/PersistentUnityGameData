@@ -50,7 +50,7 @@ public abstract class SaveableUnityData : IRestorableComponentContainer, ITransf
 
     protected virtual void componentRestored(ISaveableComponent c, IComponentAssigner assigner) { }
     
-    public object getTransformedValue()
+    public object GetTransformedValue()
     {
         return createdComponent;
     }

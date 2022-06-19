@@ -12,9 +12,9 @@ public interface ISaveableGameObject : IComponentAssigner
     /// (returns false if there is none)
     /// </summary>
     /// <returns></returns>
-    bool findAndSetParent();
+    bool FindAndSetParent();
 
-    bool findAndSetParent(out Stack<int> hirachy);
+    bool FindAndSetParent(out Stack<int> hirachy);
 
     void ResetChildNodes();
 
@@ -22,10 +22,10 @@ public interface ISaveableGameObject : IComponentAssigner
 
     void SaveAllBehaviours(GamePersistence.SaveType saveType);
 
-    void addChildren(ISaveableGameObject gameObject, Stack<int> hirachyPath);
+    void AddChildren(ISaveableGameObject gameObject, Stack<int> hirachyPath);
 
     GameObject GetGameObject();
 
-    int getSiblingIndex();
+    int GetSiblingIndex();
     
 }

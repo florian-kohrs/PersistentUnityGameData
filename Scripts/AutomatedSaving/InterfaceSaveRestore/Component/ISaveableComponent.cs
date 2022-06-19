@@ -5,9 +5,9 @@ using UnityEngine;
 public interface ISaveableComponent
 {
 
-    IRestorableComponent createRestoreableComponent();
+    IRestorableComponent CreateRestoreableComponent();
 
-    IRestorableComponent saveComponent(GameObject gameObject, 
+    IRestorableComponent SaveComponent(GameObject gameObject, 
         IComponentAssigner assigner, GamePersistence.SaveType saveType);
     
 }
